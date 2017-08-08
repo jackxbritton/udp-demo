@@ -29,13 +29,17 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    char buffer[256];
-    int len = recvfrom(fd, buffer, 256, 0, NULL, 0);
-    if (len < 0) {
-        perror("recvfrom");
-        return 1;
+    while (1) {
+        struct sockaddr_in addr_client;
+        socklen_t addr_client_len = sizeof(addr_client);
+        char buffer[256];
+        int len = recvfrom(fd, buffer, 256, 0, (struct sockaddr *) &addr_client, &addr_client_len);
+        if (len < 0) {
+            perror("recvfrom");
+            return 1;
+        }
+        printf("MSG: %.*s FROM %x\n", len, buffer, addr_client.sin_addr.s_addr);
     }
-    printf("%.*s\n", len, buffer);
 
     close(fd);
 
