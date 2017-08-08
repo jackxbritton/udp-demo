@@ -34,6 +34,14 @@ int main(int argc, char *argv[]) {
         perror("sendto");
         return 1;
     }
+    // Receive response.
+    char buffer[256];
+    int len = recvfrom(fd, buffer, 256, 0, NULL, NULL);
+    if (len < 0) {
+        perror("recvfrom");
+        return 1;
+    }
+    printf("%.*s\n", len, buffer);
 
     return 0;
 }

@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
     }
 
     while (1) {
-        struct sockaddr_in addr_client;
+        struct sockaddr_storage addr_client;
         socklen_t addr_client_len = sizeof(addr_client);
         char buffer[256];
         int len = recvfrom(fd, buffer, 256, 0, (struct sockaddr *) &addr_client, &addr_client_len);
@@ -38,7 +38,12 @@ int main(int argc, char *argv[]) {
             perror("recvfrom");
             return 1;
         }
-        printf("MSG: %.*s FROM %x\n", len, buffer, addr_client.sin_addr.s_addr);
+        printf("%.*s\n", len, buffer);
+        // Reply.
+        if (addr_client.ss_family == AF_INET) 
+            sendto(fd, "reply!", strlen("reply!"), 0, (struct sockaddr *) &addr_client, sizeof(struct sockaddr_in));
+        else if (addr_client.ss_family == AF_INET6)
+            sendto(fd, "reply!", strlen("reply!"), 0, (struct sockaddr *) &addr_client, sizeof(struct sockaddr_in6));
     }
 
     close(fd);
